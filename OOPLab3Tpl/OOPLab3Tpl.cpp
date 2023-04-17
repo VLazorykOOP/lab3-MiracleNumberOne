@@ -233,6 +233,96 @@ private:
 int Vector::numObjects = 0;
 
 
+class Matrix {
+private:
+    int* data; // pointer to int array
+    int rows; // number of rows
+    int cols; // number of columns
+    int errorCode; // error code for error handling
+    static int count; // static variable to count the number of objects
+
+public:
+    // Constructors
+    Matrix() : rows(3), cols(3), errorCode(0) {
+        data = new int[rows * cols];
+        for (int i = 0; i < rows * cols; i++) {
+            data[i] = 0; // Initialize with zeros
+        }
+        count++;
+    }
+
+    Matrix(int n) : rows(n), cols(n), errorCode(0) {
+        data = new int[rows * cols];
+        for (int i = 0; i < rows * cols; i++) {
+            data[i] = 0; // Initialize with zeros
+        }
+        count++;
+    }
+
+    Matrix(int n, int m, int value) : rows(n), cols(m), errorCode(0) {
+        data = new int[rows * cols];
+        for (int i = 0; i < rows * cols; i++) {
+            data[i] = value; // Initialize with given value
+        }
+        count++;
+    }
+
+    // Copy constructor
+    Matrix(const Matrix& other) : rows(other.rows), cols(other.cols), errorCode(other.errorCode) {
+        data = new int[rows * cols];
+        for (int i = 0; i < rows * cols; i++) {
+            data[i] = other.data[i]; // Copy data from other Matrix object
+        }
+        count++;
+    }
+
+    // Assignment operator
+    Matrix& operator=(const Matrix& other) {
+        if (this == &other) {
+            return *this; // Self-assignment check
+        }
+        delete[] data; // Deallocate old memory
+        rows = other.rows;
+        cols = other.cols;
+        errorCode = other.errorCode;
+        data = new int[rows * cols];
+        for (int i = 0; i < rows * cols; i++) {
+            data[i] = other.data[i]; // Copy data from other Matrix object
+        }
+        return *this;
+    }
+
+    // Destructor
+    ~Matrix() {
+        delete[] data;
+        count--;
+    }
+
+    // Member functions
+    void setValue(int value = 0) {
+        for (int i = 0; i < rows * cols; i++) {
+            data[i] = value; // Set all elements to given value (default is 0)
+        }
+    }
+
+    int getElement(int i, int j) {
+        if (i < 0 || i >= rows || j < 0 || j >= cols) {
+            errorCode = 1; // Set error code for out of bounds access
+            return 0;
+        }
+        return data[i * cols + j];
+    }
+
+    // Static function to get the count of Matrix objects
+    static int getObjectCount() {
+        return count;
+    }
+};
+
+// Initialize static count variable to 0
+int Matrix::count = 0;
+
+
 int main() {
     // Testing the Date class
     Date d1; // Using the default constructor, date will be January 1, 2023
@@ -311,6 +401,32 @@ int main() {
 
     // Static member variable
     std::cout << "Number of Vector objects created: " << Vector::getNumObjects() << std::endl;
+
+
+    // Test Matrix class
+    // Test default constructor
+    Matrix matrix1;
+    std::cout << "Matrix 1: " << matrix1.getElement(0, 0) << std::endl;
+
+    // Test constructor with size parameter
+    Matrix matrix2(4);
+    matrix2.setValue(2);
+    std::cout << "Matrix 2: " << matrix2.getElement(0, 0) << std::endl;
+
+    // Test constructor with size and value parameters
+    Matrix matrix3(3, 5, 7);
+    std::cout << "Matrix 3: " << matrix3.getElement(1, 2) << std::endl;
+
+    // Test copy constructor
+    Matrix matrix4 = matrix3;
+    std::cout << "Matrix 4: " << matrix4.getElement(1, 2) << std::endl;
+
+    // Test assignment operator
+    matrix1 = matrix3;
+    std::cout << "Matrix 1 (after assignment): " << matrix1.getElement(1, 2) << std::endl;
+
+    // Test getObjectCount() static function
+    std::cout << "Number of Matrix objects: " << Matrix::getObjectCount() << std::endl;
 
     return 0;
 }
